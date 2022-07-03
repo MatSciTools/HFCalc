@@ -1,5 +1,5 @@
 IDIR =../include
-CXX=g++-9
+CXX=g++
 CXXFLAGS=-I$(IDIR) -I ../eigen-3.4.0/ -I../boost_1_79_0
 
 ODIR=../bin
@@ -25,7 +25,7 @@ $(OBJ): %.o : %.cpp
 %.cpp:
 	$(CXX) $(CXXFLAGS) -c -o $@ 
 
-.PHONY: clean
+.PHONY: clean check distcheck
 
 install:
 	if [ ! -d $(ODIR) ]; then mkdir $(ODIR); fi
