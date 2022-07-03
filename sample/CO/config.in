@@ -1,0 +1,21 @@
+POS posdata.dat
+BASIS STO3G
+  # Current options are STO2G,STO3G,STO4G,STO5G,STO6G  
+BFOLDER ../../basis/
+MODE 0
+  #  0 - Restricted Hartree-Fock
+  #  1 - Unrestricted Hartree-Fock (in progress)
+RELAX 0
+  #  0 - no relaxation
+  #  1 - relax structure
+MIXTYPE 0
+  #  0 - Simple Mixing
+  #  1 - Anderson Mixing (in progress)
+  #  2 - Broyden Mixing (in progress)
+WRITE 0
+  #  0 - write out energies only (default)
+  #  1 - write out wavevector and contracted gaussian coefficients
+MIXPARAM 1
+NITER 100
+ETOL  0.000001
+OUT outfile
