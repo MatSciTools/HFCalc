@@ -38,7 +38,7 @@ NITER 100
 ETOL  0.000001
 OUT outfile
 ```
-The position file (posdata.dat) looks like that (positions are in atomic units)
+The position file (posdata.dat) looks like that (positions are in atomic units). The second column is atomic number and third column is number of electrons. They are different in order to allow ions.
 ```
 H 1 1 0.0 0.0 0.0  
 H 1 1 0.0 0.0 1.4 
