@@ -33,5 +33,5 @@ install:
 	mv hfcalc $(ODIR)
 
 clean:
-	if [ -d $(ODIR) ]; then rm -r $(ODIR); fi
 	if [ ! -d $(ODIR) ]; then rm *.o hfcalc; fi
+	if [ -d $(ODIR) ]; then rm -r $(ODIR); fi
