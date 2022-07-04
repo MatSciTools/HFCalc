@@ -1,6 +1,6 @@
 <img src="docs/HFCalc.png"></img>
 
-<b>HFCalc</b> is a first-principles software package that can currently calculate total energy of molecules using restricted Hartree-Fock theory. It is written in C++. It employs linear combination of aromic orbitals, where the atomic orbitals are represented using contracted Gaussians (STO-NG basis set). It is free, open-source and in constant development. Header files from the Eigen and Boost libraries are used.
+<b>HFCalc</b> is a first-principles software package that can currently calculate total energy of molecules using restricted Hartree-Fock theory. It is written in C++. It employs linear combination of atomic orbitals, where the atomic orbitals are represented using contracted Gaussians (STO-NG basis set). It is free, open-source and in constant development. Header files from the Eigen and Boost libraries are used.
 
 ## Installation
 
