@@ -1,6 +1,6 @@
 IDIR =../include
 CXX=g++
-CXXFLAGS=-I$(IDIR) -I ../eigen-3.4.0/ -I../boost_1_79_0
+CXXFLAGS= -std=c++11 -I$(IDIR) -I ../eigen-3.4.0/ -I../boost_1_79_0
 
 ODIR=../bin
 
