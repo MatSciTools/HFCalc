@@ -1,6 +1,7 @@
 IDIR =../include
 CXX=g++
-CXXFLAGS= -std=c++11 -I$(IDIR) -I ../eigen-3.4.0/ -I../boost_1_79_0
+CXXFLAGS= -std=c++11
+CPPFLAGS = -I$(IDIR) -I ../eigen-3.4.0/ -I../boost_1_79_0
 
 ODIR=../bin
 
@@ -18,12 +19,12 @@ RHF.o \
 hfcalc.o
 
 hfcalc: $(OBJ) 
-	$(CXX) -o $@ $^ $(CFLAGS)
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -o $@ $^ 
 
-$(OBJ): %.o : %.cpp
+$(OBJ): %.o : %.cpp 
 
 %.cpp:
-	$(CXX) $(CXXFLAGS) -c -o $@ 
+	$(CXX) $(CPPFLAGS) -c -o $@ $(CXXFLAGS)
 
 .PHONY: clean check distcheck
 
