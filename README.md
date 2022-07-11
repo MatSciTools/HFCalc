@@ -38,6 +38,7 @@ NITER 100
 ETOL  0.000001
 OUT outfile
 ```
+Note that in this example, the current working directory is assumed to be sample/H2, hence BFOLDER (path to basis folder) is given as  ../../basis/. If you are running the calculation elsewhere, you must modify this input parameter accordingly. Also the '/' at the end of the path is important. <br>
 The position file (posdata.dat) looks like that (positions are in atomic units). The second column is atomic number and third column is number of electrons. They are different in order to allow ions.
 ```
 H 1 1 0.0 0.0 0.0  
