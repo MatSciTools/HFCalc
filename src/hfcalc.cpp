@@ -8,11 +8,15 @@
 
 int main(){
   // Initializing timekeeping
-    std::chrono::time_point<std::chrono::system_clock> tstart, tend;
+    std::chrono::time_point<std::chrono::system_clock> tstart;
     tstart = std::chrono::system_clock::now();
     std::time_t start_time = std::chrono::system_clock::to_time_t(tstart);
     std::cout << "Execution started at " << std::ctime(&start_time);
   
+  // Initializing MPI
+    MultiProc::Init();
+    double wtstart = MultiProc::getTime();
+
   // Handling I/O
     InputHandler in;
     OutputHandler out;
@@ -52,9 +56,11 @@ int main(){
       return 0;
     }
   
-  // Calculating elapsed time and end I/O
-    tend = std::chrono::system_clock::now();
-    std::chrono::duration<double> elapsed_seconds = tend - tstart;
-    out.writeString("Execution Time : "+std::to_string(elapsed_seconds.count())+"s");
+  // Calculating walltime elapsed and ending MPI
+    double wtend = MultiProc::getTime();
+    MultiProc::End();
+
+  // Printing elapsed time and end I/O
+    out.writeString("Execution Time : "+std::to_string(wtend-wtstart)+"s");
     out.closeOutputFile();
 }
