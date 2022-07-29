@@ -6,6 +6,7 @@ CPPFLAGS = -I$(IDIR) -I ../eigen-3.4.0/ -I../boost_1_79_0
 ODIR=../bin
 
 OBJ = \
+MultiProc.o \
 VectorMath.o \
 OutputHandler.o \
 InputHandler.o \
