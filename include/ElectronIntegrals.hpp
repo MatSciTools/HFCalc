@@ -3,6 +3,7 @@
 #include <string>
 #include "MatrixElement.hpp"
 #include "Molecule.hpp"
+#include "MultiProc.hpp"
 #include <Eigen/Dense>
 
 class ElectronIntegrals{
