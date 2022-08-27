@@ -3,7 +3,6 @@
 #include <math.h>
 #include <fstream>
 #include "ElectronIntegrals.hpp"
-#include "OutputHandler.hpp"
 #include <Eigen/Dense>
 #include <Eigen/Eigenvalues>
 
