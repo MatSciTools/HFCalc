@@ -58,9 +58,9 @@ int main(){
   
   // Calculating walltime elapsed and ending MPI
     double wtend = MultiProc::getTime();
+    out.writeString("Execution Time : "+std::to_string(wtend-wtstart)+"s");
     MultiProc::End();
 
   // Printing elapsed time and end I/O
-    out.writeString("Execution Time : "+std::to_string(wtend-wtstart)+"s");
     out.closeOutputFile();
 }
