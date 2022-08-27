@@ -3,6 +3,7 @@
 #include <fstream>
 #include <sstream>
 #include <iostream>
+#include "MultiProc.hpp"
 
 class OutputHandler {
 public:
