@@ -15,6 +15,6 @@ public:
      static void distributeMatrix(Eigen::MatrixXd &m, Eigen::MatrixXd &mbase, int sendsize);
      static void sendMatrixEverywhere(Eigen::MatrixXd &m, int sendsize);
      static void sendVectorEverywhere(Eigen::VectorXd &vec, int sendsize);
-     static void sumOverProcesses(long double &val);
+     static void sumOverProcesses(long double &val, long double &temp);
      static void End();
 };
