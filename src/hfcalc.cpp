@@ -7,12 +7,17 @@
 #include "InputHandler.hpp"
 
 int main(){
-  // Initializing timekeeping
-    std::chrono::time_point<std::chrono::system_clock> tstart, tend;
-    tstart = std::chrono::system_clock::now();
-    std::time_t start_time = std::chrono::system_clock::to_time_t(tstart);
-    std::cout << "Execution started at " << std::ctime(&start_time);
-  
+  // Initializing MPI
+    MultiProc::Init();
+    double wtstart = MultiProc::getTime();
+
+    // Printing starting date and time, and number of ranks
+    if (MultiProc::getMyRank() == 0){
+      std::chrono::time_point<std::chrono::system_clock> tstart;
+      tstart = std::chrono::system_clock::now();
+      std::time_t start_time = std::chrono::system_clock::to_time_t(tstart);
+      std::cout << "Execution started at " << std::ctime(&start_time) << std::endl;
+    }
   // Handling I/O
     InputHandler in;
     OutputHandler out;
@@ -44,17 +49,25 @@ int main(){
       out.writeStringFloat("Total Converged Energy (in Hartrees): ", rf.getTotalEnergy());
       out.writeString("#################################################");
       out.writeNewline();
-      std::cout << "Total Converged Energy : " << rf.getTotalEnergy() << " Hartrees" << std::endl;
-      std::cout << "Data written to : " << in.outfile << std::endl;
+      if (MultiProc::getMyRank() == 0){
+        std::cout << "Total Converged Energy : " << rf.getTotalEnergy() << " Hartrees" << std::endl;
+        std::cout << "Data written to : " << in.outfile << std::endl;
+      }
     }
     else {
       out.writeString("Error: Only RHF implemented in Version 1.0! Stay tuned for more.");
       return 0;
     }
   
-  // Calculating elapsed time and end I/O
-    tend = std::chrono::system_clock::now();
-    std::chrono::duration<double> elapsed_seconds = tend - tstart;
-    out.writeString("Execution Time : "+std::to_string(elapsed_seconds.count())+"s");
+  // Calculating walltime elapsed and ending MPI
+    double wtend = MultiProc::getTime();
+    out.writeString("Execution Time : "+std::to_string(wtend-wtstart)+"s");
+    if (MultiProc::getMyRank() == 0){
+      std::cout << "Execution Time: " << wtend-wtstart << " s" << std::endl;
+    }
+    MultiProc::synchronize();
+    MultiProc::End();
+
+  // Printing elapsed time and end I/O
     out.closeOutputFile();
 }

@@ -7,22 +7,51 @@
 void ElectronIntegrals::Init(Molecule m){
     mol = m;
     matsize = mol.totalContractedGaussians;
-    S.resize(matsize, matsize);
-    T.resize(matsize, matsize);
-    V.resize(matsize, matsize);
+    divideMatrixAmongRanks();
+    S.resize(matsize, localmatsize[MultiProc::getMyRank()]);
+    T.resize(matsize, localmatsize[MultiProc::getMyRank()]);
+    V.resize(matsize, localmatsize[MultiProc::getMyRank()]);
     g.resize(matsize*matsize, matsize*matsize);
     calSingleElectronMatrices();
     calElectronRepulsionMatrix();
+    MultiProc::synchronize();
+
+}
+
+void ElectronIntegrals::divideMatrixAmongRanks(){
+    int lmat = matsize/MultiProc::getTotalRanks();
+    for(int j=0;j<MultiProc::getTotalRanks();j++){
+        localmatsize.push_back(lmat);
+        if (matsize % MultiProc::getTotalRanks() != 0){
+            if (j < matsize % MultiProc::getTotalRanks()){
+                localmatsize[j] = localmatsize[j] + 1;
+            }
+        }
+    }
+}
+
+int ElectronIntegrals::returnGlobalIndex(int j){
+    if (MultiProc::getMyRank() == 0){
+        return j;
+    }
+    else {
+        int matcumulative = 0;
+        for (int k=0;k<MultiProc::getMyRank();k++){
+            matcumulative = matcumulative + localmatsize[k];
+        }
+        return matcumulative + j;
+    }
 }
 
 void ElectronIntegrals::calSingleElectronMatrices(){
-    int i; int j; std::vector <int> A, B;
+    int i; int j,jl; std::vector <int> A, B;
     std::vector <long double> posA, posB, posC, alphaA, alphaB, dmatA, dmatB;
-    int xi, yi, zi, xj, yj, zj; int m, n, l;
+    int xi, yi, zi, xj, yj, zj; int m, n, l; int start,end;
     std::vector <long double> normA, normB, Q;
     long double element, element2, element3, Zl;
     for (i = 0; i < matsize; i++){
-        for (j = 0; j < matsize; j++){
+        for (jl = 0; jl < localmatsize[MultiProc::getMyRank()]; jl++){
+            j = returnGlobalIndex(jl);
             A = mol.getAtomOfContractedGaussian(i);
             posA = mol.atoms[A[0]].position;
             alphaA = mol.atoms[A[0]].orbitals[A[1]].alpha;
@@ -57,9 +86,10 @@ void ElectronIntegrals::calSingleElectronMatrices(){
                         }
                 }
             }
-            S(i, j) = element;
-            T(i, j) = element2;
-            V(i, j) = element3;
+
+            S(i, jl) = element;
+            T(i, jl) = element2;
+            V(i, jl) = element3;
         }
     }
 }
@@ -69,7 +99,7 @@ void ElectronIntegrals::calElectronRepulsionMatrix(){
     std::vector <long double> posA, posB, posC, posD, alphaA, alphaB, alphaC, alphaD;
     std::vector <long double> dmatA, dmatB, dmatC, dmatD, normA, normB, normC, normD;
     int xi, yi, zi, xj, yj, zj, xk, yk, zk, xl, yl, zl;
-    int m, n, o, p;
+    int m, n, o, p, start, end;
     long double element = 0.0;
     for (i=0;i<matsize;i++){
         for(j=0;j<matsize;j++){

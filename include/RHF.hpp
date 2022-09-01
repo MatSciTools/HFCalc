@@ -3,7 +3,6 @@
 #include <math.h>
 #include <fstream>
 #include "ElectronIntegrals.hpp"
-#include "OutputHandler.hpp"
 #include <Eigen/Dense>
 #include <Eigen/Eigenvalues>
 
@@ -14,7 +13,7 @@ public:
    OutputHandler *out;
    int maxiter, mixtype, writemode;
    long double tol, mixparam, single_en, fock_en;
-   Eigen::MatrixXd C, P, newP, F;
+   Eigen::MatrixXd C, P, newP, Pen, F, SFull, FFull;
    Eigen::VectorXf fockvals;
    std::vector <long double> E;
    RHF(int ngauss, int iterations, long double tolerance, int mixing_type, 
