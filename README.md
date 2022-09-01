@@ -1,16 +1,16 @@
 <img src="docs/HFCalc.png"></img>
 
-<b>HFCalc</b> is a first-principles software package that can currently calculate total energy of molecules using restricted Hartree-Fock theory. It is written in C++. It employs linear combination of atomic orbitals, where the atomic orbitals are represented using contracted Gaussians (STO-NG basis set). It is free, open-source and in constant development. Header files from the Eigen and Boost libraries are used.
+<b>HFCalc</b> is a first-principles software package that can currently calculate total energy of molecules using restricted Hartree-Fock theory. It is written in C++, and can run on multiple cores with MPI. It employs linear combination of atomic orbitals, where the atomic orbitals are represented using contracted Gaussians (STO-NG basis set). It is free, open-source and in constant development. Header files from the Eigen and Boost libraries are used.
 
 ## Installation
 
-The package can be installed using make.
+The package can be installed using make. Note that MPI is required, even to do single core calculations.
 ```
 cd src/
-make CXX=... CXXFLAGS=...
+make CXX=mpic++ CXXFLAGS=...
 make install
 ```
-The executable (called hfcalc) will be placed in the bin/ folder. Note that the boost header files give an error when using Apple clang compiler if you don't specify -std=c++11 in the CXXFLAGS. You are welcome to try other compilers, please open an issue if it doesn't work.
+Replace mpic++ in the above with the desired MPI wrapper compiler (eg mpiicpc for Intel systems). The executable (called hfcalc) will be placed in the bin/ folder. In case of any errors during make, please open an issue if it doesn't work.
 
 ## Running a calculation
 
@@ -46,29 +46,32 @@ H 1 1 0.0 0.0 1.4
 ```
 In the same directory, run the executable
 ```
-path_to_repository/bin/hfcalc
+mpirun -np 2 path_to_repository/bin/hfcalc
 ```
 The standard output will print the final converged energy
 ```
-Execution started at Sun Jul  3 18:41:07 2022
-###################################################################################
+Execution started at Thu Sep  1 18:38:42 2022
 
+###################################################################################
+                                                                                   
 ***       ***    ***********   **********          *          ***        **********
 ***       ***    ***********   **********         ***         ***        **********
-***       ***    ***           **                *****        ***        **
-*************    *******       **               *** ***       ***        **
-*************    *******       **              ***   ***      ***        **
-***       ***    ***           **             ***********     ***        **
+***       ***    ***           **                *****        ***        **        
+*************    *******       **               *** ***       ***        **        
+*************    *******       **              ***   ***      ***        **        
+***       ***    ***           **             ***********     ***        **        
 ***       ***    ***           **********    ***       ***    *********  **********
 ***       ***    ***           **********   ***         ***   *********  **********
-
+                                                                                   
 ###################################################################################
 Version 1.0 (July 2022)
 ###################################################################################
+Using 2 MPI Ranks
 Total Converged Energy : -1.11671 Hartrees
 Data written to : outfile
+Execution Time: 0.0392292 s
 ```
-The outfile contains more detailed information on the calculation. More examples are available in the sample folder. You are encouraged to run those examples and other systems of interest. Any unphysical or problematic results should be reported by opening an issue.
+The outfile contains more detailed information on the calculation. More examples are available in the sample folder. You are encouraged to run those examples and other systems of interest. Any unphysical or problematic results should be reported by opening an issue. NOTE that the MPI addition is recent and may cause problems in case of uneven load sharing. Please open issues accordingly. 
 
 ## Acknowledgement
 
