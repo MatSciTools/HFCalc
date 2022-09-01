@@ -21,7 +21,7 @@ void OutputHandler::Init(std::string ofile){
      writeString("***       ***    ***           **********   ***         ***   *********  **********");
      writeString("                                                                                   ");
      writeString("###################################################################################");
-     writeString("Version 1.0 (July 2022)");
+     writeString("Version 1.1 (September 2022)");
      writeString("###################################################################################");
      writeStringInt("Number of MPI Ranks: ", MultiProc::getTotalRanks());
      std::cout << "###################################################################################" << std::endl;
@@ -36,7 +36,7 @@ void OutputHandler::Init(std::string ofile){
      std::cout << "***       ***    ***           **********   ***         ***   *********  **********" << std::endl;
      std::cout << "                                                                                   " << std::endl;
      std::cout << "###################################################################################" << std::endl;
-     std::cout << "Version 1.0 (July 2022)" << std::endl;
+     std::cout << "Version 1.1 (September 2022)" << std::endl;
      std::cout << "###################################################################################" << std::endl;
      std::cout << "Using " << MultiProc::getTotalRanks() << " MPI Ranks" << std::endl;
     }
