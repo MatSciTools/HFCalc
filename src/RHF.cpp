@@ -28,8 +28,13 @@ std::string basisfile, int wm, OutputHandler& outhandle){
     ei.Init(mol);
     C.resize(mol.numMolecularOrbitals, ei.matsize);
     P.resize(ei.matsize, ei.matsize);
+    Pen.resize(ei.matsize, ei.localmatsize[MultiProc::getMyRank()]);
     newP.resize(ei.matsize, ei.matsize);
-    F.resize(ei.matsize, ei.matsize);
+    F.resize(ei.matsize, ei.localmatsize[MultiProc::getMyRank()]);
+    if (MultiProc::getMyRank() == 0){
+        FFull.resize(ei.matsize, ei.matsize);
+        SFull.resize(ei.matsize, ei.matsize);
+    }
     fockvals.resize(mol.numMolecularOrbitals);
 }
 
@@ -43,24 +48,23 @@ std::vector <long double> RHF::getOrbitalVector(int k){
 
 }
 void RHF::initializeDensity(){
-    int i,j;
+    int i,j,start,end;
     for (i=0;i<mol.numMolecularOrbitals;i++){
         for (j=0;j<ei.matsize;j++){
             C(i, j) = 0.0;
         }
     }
-    
     for (i=0;i<ei.matsize;i++){
         for (j=0;j<ei.matsize;j++){
             P(i, j) = 0.0;
             newP(i, j) = 0.0;
-            F(i, j) = 0.0;
         }
     }
 }
 
 void RHF::updateP(){
-    int i, j, k;
+    int i, j, k, start, end;
+    end = start + ei.localmatsize[MultiProc::getMyRank()];
     for (i=0;i<ei.matsize;i++){
         for (j=0;j<ei.matsize;j++){
             newP(i,j) = 0.0;
@@ -72,7 +76,7 @@ void RHF::updateP(){
 }
 
 void RHF::mixP(){
-    int i, j;
+    int i, j, start, end;
     if (mixtype == 0){
         for (i=0;i<ei.matsize;i++){
             for (j=0;j<ei.matsize;j++){
@@ -83,24 +87,30 @@ void RHF::mixP(){
 }
 
 void RHF::normalizeC(){
-    int k,i; long double norm = 0.0; std::vector <long double> vec;
+    int k,i; long double norm = 0.0;
+    long double normreduce = 0.0; 
+    std::vector <long double> vec;
+    if (MultiProc::getMyRank() == 0) {
     for(k=0;k<mol.numMolecularOrbitals;k++){
         vec = RHF::getOrbitalVector(k);
-        norm = VectorMath::calExpectationValue(vec, ei.S, ei.matsize);
+        norm = VectorMath::calExpectationValue(vec, SFull, ei.matsize);
         for (i=0;i<ei.matsize;i++){
             C(k, i) = (1.0/sqrt(norm))*C(k, i);
         }
     }
+    }
+    MultiProc::sendMatrixEverywhere(C, mol.numMolecularOrbitals*ei.matsize);
 }
 
 void RHF::constructF(){
-    int i, j, k, l;
+    int i, j, k, l, jl;
     for(i=0;i<ei.matsize;i++){
-        for (j=0;j<ei.matsize;j++){
-            F(i, j) = ei.T(i, j) + ei.V(i, j);
+        for (jl=0;jl<ei.localmatsize[MultiProc::getMyRank()];jl++){
+            j = ei.returnGlobalIndex(jl);
+            F(i, jl) = ei.T(i, jl) + ei.V(i, jl);
             for (k=0;k<ei.matsize;k++){
                 for(l=0;l<ei.matsize;l++){
-                    F(i, j) = F(i, j) + (ei.g(i*ei.matsize+k, j*ei.matsize+l) 
+                    F(i, jl) = F(i, jl) + (ei.g(i*ei.matsize+k, j*ei.matsize+l) 
                     - 0.5*ei.g(i*ei.matsize+k, l*ei.matsize+j))*P(k, l);
                 }
             }
@@ -113,9 +123,14 @@ long double RHF::solveSystem(){
     Eigen::VectorXd w(ei.matsize);
     Eigen::MatrixXd v(mol.numMolecularOrbitals, ei.matsize);
     Eigen::GeneralizedSelfAdjointEigenSolver<Eigen::MatrixXd> ges;
-    ges.compute(F, ei.S);
-    w = ges.eigenvalues().transpose().real();
-    v = ges.eigenvectors().transpose().real();
+    if (MultiProc::getMyRank() == 0){
+       ges.compute(FFull, SFull);
+       w = ges.eigenvalues().transpose().real();
+       v = ges.eigenvectors().transpose().real();
+    }
+    MultiProc::sendMatrixEverywhere(v, mol.numMolecularOrbitals*ei.matsize);
+    MultiProc::sendVectorEverywhere(w, ei.matsize);
+    std::cout << v << std::endl;
     for (int k=0;k<mol.numMolecularOrbitals;k++){
         for (int i=0;i<ei.matsize;i++){
             C(k, i) = v(k, i);
@@ -129,14 +144,20 @@ long double RHF::solveSystem(){
 void RHF::calEnergy(long double focksum){
     long double nuclen = mol.nuclearEnergy;
     long double total_energy = 0.0;
+    long double total_energy_sum = 0.0;
+    
     for(int i=0;i<ei.matsize;i++){
-        for (int j=0;j<ei.matsize;j++){
-            total_energy = total_energy + 0.5*(ei.T(i,j) + ei.V(i,j))*P(i,j);
+        for (int j=0;j<ei.localmatsize[MultiProc::getMyRank()];j++){
+            total_energy = total_energy + 0.5*(ei.T(i,j) + ei.V(i,j))*Pen(i,j);
         }
     }
+    std::cout << total_energy << std::endl;
+    MultiProc::sumOverProcesses(total_energy);
+    MultiProc::synchronize();
+    std::cout << total_energy << std::endl;
     single_en = total_energy;
     fock_en = focksum;
-    total_energy = total_energy + focksum + nuclen;
+    total_energy =  single_en + focksum + nuclen;
     E.push_back(total_energy);
 }
 
@@ -175,10 +196,14 @@ int RHF::doSCF(){
         out->writeString("#############################");
         out->writeNewline();
         constructF();
+        MultiProc::collectMatrix(F, FFull, ei.matsize*ei.localmatsize[MultiProc::getMyRank()]);
+        MultiProc::collectMatrix(ei.S, SFull, ei.matsize*ei.localmatsize[MultiProc::getMyRank()]);
+        MultiProc::synchronize();
         long double focksum = solveSystem();
         normalizeC();
         updateP();
         mixP();
+        MultiProc::distributeMatrix(Pen, P, ei.matsize*ei.localmatsize[MultiProc::getMyRank()]);
         calEnergy(focksum);
         if (writemode == 1){
             writeC();

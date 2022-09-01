@@ -15,6 +15,7 @@ public:
     ElectronIntegrals(){};
     void Init(Molecule m);
     void divideMatrixAmongRanks();
+    int returnGlobalIndex(int j);
     void calSingleElectronMatrices();
     void calElectronRepulsionMatrix();
 };

@@ -7,16 +7,17 @@
 #include "InputHandler.hpp"
 
 int main(){
-  // Initializing timekeeping
-    std::chrono::time_point<std::chrono::system_clock> tstart;
-    tstart = std::chrono::system_clock::now();
-    std::time_t start_time = std::chrono::system_clock::to_time_t(tstart);
-    std::cout << "Execution started at " << std::ctime(&start_time);
-  
   // Initializing MPI
     MultiProc::Init();
     double wtstart = MultiProc::getTime();
 
+    // Printing starting date and time, and number of ranks
+    if (MultiProc::getMyRank() == 0){
+      std::chrono::time_point<std::chrono::system_clock> tstart;
+      tstart = std::chrono::system_clock::now();
+      std::time_t start_time = std::chrono::system_clock::to_time_t(tstart);
+      std::cout << "Execution started at " << std::ctime(&start_time) << std::endl;
+    }
   // Handling I/O
     InputHandler in;
     OutputHandler out;
