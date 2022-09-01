@@ -49,8 +49,10 @@ int main(){
       out.writeStringFloat("Total Converged Energy (in Hartrees): ", rf.getTotalEnergy());
       out.writeString("#################################################");
       out.writeNewline();
-      std::cout << "Total Converged Energy : " << rf.getTotalEnergy() << " Hartrees" << std::endl;
-      std::cout << "Data written to : " << in.outfile << std::endl;
+      if (MultiProc::getMyRank() == 0){
+        std::cout << "Total Converged Energy : " << rf.getTotalEnergy() << " Hartrees" << std::endl;
+        std::cout << "Data written to : " << in.outfile << std::endl;
+      }
     }
     else {
       out.writeString("Error: Only RHF implemented in Version 1.0! Stay tuned for more.");
@@ -60,6 +62,10 @@ int main(){
   // Calculating walltime elapsed and ending MPI
     double wtend = MultiProc::getTime();
     out.writeString("Execution Time : "+std::to_string(wtend-wtstart)+"s");
+    if (MultiProc::getMyRank() == 0){
+      std::cout << "Execution Time: " << wtend-wtstart << " s" << std::endl;
+    }
+    MultiProc::synchronize();
     MultiProc::End();
 
   // Printing elapsed time and end I/O
