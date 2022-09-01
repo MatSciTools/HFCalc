@@ -40,10 +40,8 @@ void MultiProc::sendMatrixEverywhere(Eigen::MatrixXd &m, int sendsize){
     MPI_Bcast(m.data(), sendsize, MPI_DOUBLE, 0, MPI_COMM_WORLD);
 }
 
-void MultiProc::sumOverProcesses(long double &val){
-    long double temp = 0.0;
-    MPI_Reduce(&val, &val, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
-    MPI_Bcast(&val, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+void MultiProc::sumOverProcesses(long double &val, long double &temp){
+    MPI_Allreduce(&val, &temp, 1, MPI_LONG_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
 }
 void MultiProc::abortMultiProc(){
     MPI_Abort(MPI_COMM_WORLD,0);
