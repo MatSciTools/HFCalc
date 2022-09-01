@@ -50,7 +50,7 @@ mpirun -np 2 path_to_repository/bin/hfcalc
 ```
 The standard output will print the final converged energy
 ```
-Execution started at Thu Sep  1 18:38:42 2022
+Execution started at Thu Sep  1 18:46:49 2022
 
 ###################################################################################
                                                                                    
@@ -64,12 +64,12 @@ Execution started at Thu Sep  1 18:38:42 2022
 ***       ***    ***           **********   ***         ***   *********  **********
                                                                                    
 ###################################################################################
-Version 1.0 (July 2022)
+Version 1.1 (September 2022)
 ###################################################################################
 Using 2 MPI Ranks
 Total Converged Energy : -1.11671 Hartrees
 Data written to : outfile
-Execution Time: 0.0392292 s
+Execution Time: 0.0321404 s
 ```
 The outfile contains more detailed information on the calculation. More examples are available in the sample folder. You are encouraged to run those examples and other systems of interest. Any unphysical or problematic results should be reported by opening an issue. NOTE that the MPI addition is recent and may cause problems in case of uneven load sharing. Please open issues accordingly. 
 
