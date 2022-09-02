@@ -10,7 +10,7 @@ cd src/
 make CXX=mpic++ CXXFLAGS=...
 make install
 ```
-Replace mpic++ in the above with the desired MPI wrapper compiler (eg mpiicpc for Intel systems). The executable (called hfcalc) will be placed in the bin/ folder. In case of any errors during make, please open an issue if it doesn't work.
+Replace mpic++ in the above with the desired MPI wrapper compiler (eg mpiicpc for Intel systems). The executable (called hfcalc) will be placed in the bin/ folder. In case of any errors during make, please open an issue.
 
 ## Running a calculation
 
@@ -71,7 +71,7 @@ Total Converged Energy : -1.11671 Hartrees
 Data written to : outfile
 Execution Time: 0.0321404 s
 ```
-The outfile contains more detailed information on the calculation. More examples are available in the sample folder. You are encouraged to run those examples and other systems of interest. Any unphysical or problematic results should be reported by opening an issue. NOTE that the MPI addition is recent and may cause problems in case of uneven load sharing. Please open issues accordingly. 
+The outfile contains more detailed information on the calculation. More examples are available in the sample folder. You are encouraged to run those examples and other systems of interest. Any unphysical or problematic results should be reported by opening an issue. NOTE that the MPI addition is recent and may cause problems in case of uneven load sharing. If such problems are encountered, please open issues.
 
 ## Acknowledgement
 
